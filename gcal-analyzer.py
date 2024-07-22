@@ -129,6 +129,7 @@ def main():
     for title in skipped_meetings['internal_meeting']:
         print(f"{title}")
 
+    print("\n")  # Add two newlines after internal meetings section
     for data in aggregated_data:
         print(f"{data['name']} ({data['duration_minutes']}m)")
 
