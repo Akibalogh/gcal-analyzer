@@ -1,6 +1,7 @@
 from __future__ import print_function
 import datetime
 import os.path
+from collections import Counter
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -21,7 +22,7 @@ def authenticate_google_calendar():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=8080)
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
@@ -39,27 +40,46 @@ def calculate_event_duration(start, end):
     return (end_time - start_time).total_seconds() / 3600  # Duration in hours
 
 def main():
-    email = 'your-email@example.com'  # Replace with the specific email
+    email = input("Enter the email address: ")  # Prompt user for the email
+    
     creds = authenticate_google_calendar()
     service = build('calendar', 'v3', credentials=creds)
     
     # Define Q2 2024 start and end times
     q2_start = '2024-04-01T00:00:00Z'
     q2_end = '2024-06-30T23:59:59Z'
-
+    
+    print(f"Reviewing calendar events from {q2_start} to {q2_end}")
+    
     events = fetch_calendar_events(service, email, q2_start, q2_end)
+    
+    event_count = Counter(event.get('summary', 'No Title') for event in events)
+    skip_titles = [title for title, count in event_count.items() if count > 5]
 
+    total_duration = 0
     aggregated_data = []
+
     for event in events:
         event_name = event.get('summary', 'No Title')
+        if event_name in skip_titles:
+            continue
+
         start_time = event['start'].get('dateTime', event['start'].get('date'))
         end_time = event['end'].get('dateTime', event['end'].get('date'))
         duration = calculate_event_duration(start_time, end_time)
+        total_duration += duration
+
         aggregated_data.append({
             'name': event_name,
             'duration_hours': duration
         })
-    
+
+    print("Skipped meeting titles:")
+    for title in skip_titles:
+        print(f" - {title}")
+
+    print(f"\nTotal time spent in meetings: {total_duration:.2f} hours\n")
+
     for data in aggregated_data:
         print(f"Event: {data['name']}, Duration: {data['duration_hours']} hours")
 
