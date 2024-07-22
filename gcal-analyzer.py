@@ -1,6 +1,7 @@
 from __future__ import print_function
 import datetime
 import os.path
+import argparse
 from collections import Counter
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -51,8 +52,11 @@ def is_internal_meeting(attendees):
     return all(INTERNAL_DOMAIN in attendee['email'] for attendee in attendees if 'email' in attendee)
 
 def main():
-    email = input("Enter the email address: ")  # Prompt user for the email
-    
+    parser = argparse.ArgumentParser(description="Google Calendar Analyzer")
+    parser.add_argument('email', type=str, help='Email address to analyze calendar events for')
+    args = parser.parse_args()
+    email = args.email
+
     creds = authenticate_google_calendar()
     service = build('calendar', 'v3', credentials=creds)
     
