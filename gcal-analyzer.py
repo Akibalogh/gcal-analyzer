@@ -60,8 +60,6 @@ def main():
     q2_start = '2024-04-01T00:00:00Z'
     q2_end = '2024-06-30T23:59:59Z'
     
-    print(f"Reviewing calendar events from {q2_start} to {q2_end}")
-    
     events = fetch_calendar_events(service, email, q2_start, q2_end)
     
     event_count = Counter(event.get('summary', 'No Title') for event in events)
@@ -115,25 +113,24 @@ def main():
             'duration_minutes': duration
         })
 
-    print("Skipped meeting titles due to high recurrence:")
+    print("\nSkipped meeting titles due to high recurrence:")
     for title in skipped_meetings['high_recurrence']:
         print(f"{title}")
 
-    print("Skipped meeting titles due to external file input:")
+    print("\nSkipped meeting titles due to external file input:")
     for title in skipped_meetings['external_skip']:
         print(f"{title}")
 
-    print("Skipped meeting titles due to being internal meetings:")
+    print("\nSkipped meeting titles due to being internal meetings:")
     for title in skipped_meetings['internal_meeting']:
         print(f"{title}")
-
-    print(f"\nTotal time spent in meetings: {total_duration / 60:.2f} hours\n")
 
     for data in aggregated_data:
         print(f"{data['name']} ({data['duration_minutes']}m)")
 
-    # Print total time spent in meetings at the bottom
-    print(f"\nTotal time spent in meetings: {total_duration / 60:.2f} hours")
+    # Print total time spent in meetings and review period at the bottom
+    print(f"\nReviewing calendar events from {q2_start} to {q2_end}")
+    print(f"Total time spent in meetings: {total_duration / 60:.2f} hours")
 
 if __name__ == '__main__':
     main()
