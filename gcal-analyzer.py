@@ -117,6 +117,9 @@ def main():
             'duration_minutes': duration
         })
 
+        # Sort events by duration
+        aggregated_data.sort(key=lambda x: x['duration_minutes'], reverse=True)  
+
     print("\nSkipped meeting titles due to high recurrence:")
     for title in skipped_meetings['high_recurrence']:
         print(f"{title}")
