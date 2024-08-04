@@ -82,7 +82,7 @@ def main():
     }
 
     for event in events:
-        event_name = event.get('summary', 'No Title')
+        event_name = event.get('summary', 'No Title').strip()
         attendees = event.get('attendees', [])
 
         if event_name in forced_inclusion_titles:
@@ -129,7 +129,7 @@ def main():
     for title in skipped_meetings['internal_meeting']:
         print(f"{title}")
 
-    print("\n")  # Add two newlines after internal meetings section
+    print(f"\nQualifying calendar events:")
     for data in aggregated_data:
         print(f"{data['name']} ({data['duration_minutes']}m)")
 
